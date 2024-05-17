@@ -6,6 +6,20 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: devops_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -37,6 +51,28 @@ jobs:
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse app tests
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build and push Docker images
+        run: docker-compose build
+
+      - name: Start Docker containers
+        run: docker-compose up -d
+
+      - name: Run Composer install
+        run: docker-compose exec app composer install
+
+      - name: Run migrations
+        run: docker-compose exec app php artisan migrate
+
+      - name: Run tests
+        run: docker-compose exec app php vendor/bin/phpunit
+
+      - name: Shut down Docker containers
+        if: always()
+        run: docker-compose down
 
       - name: Install Node.js
         uses: actions/setup-node@v2
