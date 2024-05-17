@@ -46,10 +46,10 @@ jobs:
         run: docker-compose up -d
 
       - name: Run Composer install
-        run: docker-compose exec app composer install
+        run: docker-compose exec -T app composer install
 
       - name: Run migrations
-        run: docker-compose exec app php artisan migrate
+        run: docker-compose exec -T app php artisan migrate
 
       - name: Cache Composer dependencies
         uses: actions/cache@v2
@@ -75,7 +75,7 @@ jobs:
         run: vendor/bin/phpstan analyse app tests
 
       - name: Run tests
-        run: docker-compose exec app php vendor/bin/phpunit
+        run: docker-compose exec -T app php vendor/bin/phpunit
 
       - name: Shut down Docker containers
         if: always()
