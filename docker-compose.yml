@@ -2,6 +2,7 @@ services:
     app:
         build:
             context: .
+            dockerfile: Dockerfile
         container_name: laravel_devops
         working_dir: /var/www
         volumes:
