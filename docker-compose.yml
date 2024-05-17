@@ -19,15 +19,20 @@ services:
             - mysql
 
     mysql:
-        image: mysql:8.0
-        container_name: laravel_mysql
+        image: mariadb:10.6
+        restart: unless-stopped
+        tty: true
         ports:
             - "3307:3307"
         environment:
-            MYSQL_ROOT_PASSWORD: password
             MYSQL_DATABASE: devops_test
-        volumes:
-            - mysql_data:/var/lib/mysql
+            MYSQL_USER: root
+            MYSQL_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: password
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        networks:
+            - laravel
 
 volumes:
     mysql_data:
