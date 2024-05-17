@@ -33,12 +33,19 @@ jobs:
       - name: Set up Docker Compose
         run: docker-compose up -d
 
+      - name: Wait for MySQL to be ready
+        run: |
+          until docker-compose exec mysql mysqladmin ping -h"127.0.0.1" --silent; do
+            echo 'waiting for mysql to be connectable...'
+            sleep 5
+          done
+
       - name: Install dependencies
-        run: docker-compose exec app composer install
+        run: docker-compose exec -T app composer install
 
       - name: Run migrations
-        run: docker-compose exec app php artisan migrate
+        run: docker-compose exec -T app php artisan migrate
 
       - name: Run tests
-        run: docker-compose exec app php artisan test
+        run: docker-compose exec -T app php artisan test
 
