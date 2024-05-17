@@ -48,9 +48,6 @@ jobs:
       - name: Run Composer install
         run: docker-compose exec -T app composer install
 
-      - name: Run migrations
-        run: docker-compose exec -T app php artisan migrate
-
       - name: Cache Composer dependencies
         uses: actions/cache@v2
         with:
@@ -59,8 +56,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Install Composer dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist
+      - name: Run migrations
+        run: docker-compose exec -T app php artisan migrate
+
+#      - name: Install Composer dependencies
+#        run: composer install --no-progress --no-suggest --prefer-dist
 
       - name: Run PHP CS Fixer
         id: php-cs-fixer
