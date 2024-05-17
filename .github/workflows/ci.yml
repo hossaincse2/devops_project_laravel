@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: docker-compose exec -T app composer install
 
+      - name: Generate application key
+        run: docker-compose exec -T app php artisan key:generate
+
       - name: Run migrations
         run: docker-compose exec -T app php artisan migrate
 
